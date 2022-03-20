@@ -1,5 +1,7 @@
-source-list:
+source_list:
   -SB
+
+source_list1:
   -SmartButton (TransactionsData)
   -OL
   -OrchestrationLayer (RewardsData)

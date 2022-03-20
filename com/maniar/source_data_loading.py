@@ -1,5 +1,6 @@
 #read data from mysql and write to AWS S3.
 from pyspark.sql import SparkSession
+from pyspark.sql.functions import *
 import yaml
 import os.path
 import com.utils.utilities as ut
@@ -26,7 +27,7 @@ if __name__ == '__main__':
     s3_conf = app_conf['s3_conf']
     datalake_path = 's3a://' + s3_conf['datalake_path']
 
-    source_list=app_conf['src_list']
+    source_list=app_conf['source_list']
 
     for src in source_list:
         if src=='SB':
@@ -43,8 +44,9 @@ if __name__ == '__main__':
                                        app_secret["mysql_conf"]["password"]
                                        )
 
+            txnDF=txnDF.withColumn('ins_dt', current_date())
             txnDF.show()
-            txnDF.write.parquet(datalake_path + '/' + src)
+            txnDF.write.mode('append').partitionBy('ins_dt').parquet(datalake_path + '/' + src)
 
         elif src=='OL':
 
@@ -54,18 +56,25 @@ if __name__ == '__main__':
                                         app_secret["sftp_conf"]["username"],
                                         os.path.abspath(current_dir + "/../../../../" + app_secret["sftp_conf"]["pem"]),
                                         app_conf["sftp_conf"]["directory"] + "/receipts_delta_GBR_14_10_2017.csv")
-
+            ol_txn_df = ol_txn_df.withColumn('ins_dt', current_date())
             ol_txn_df.show(5, False)
             ol_txn_df.write.parquet(datalake_path + '/' + src)
 
         elif src=='ADDR':
 
-            students=ut.read_from_mongoDB(spark,
+            address_df=ut.read_from_mongoDB(spark,
                                           app_conf["mongodb_config"]["database"],
                                           app_conf["mongodb_config"]["collection"])
 
+            address_df = address_df.withColumn('ins_dt', current_date())
+            address_df.show()
+            address_df.write.mode('append').partitionBy('ins_dt').parquet(datalake_path + '/' + src)
 
-            students.show()
-            students.write.parquet(datalake_path + '/' + src)
+        elif src=='CP':
 
+            cp_df=spark.read.csv('s3a://'+s3_conf['siddharth-bigdata']+'/KC_Extract_1_20171009.csv')
+            cp_df=cp_df.withColumn('ins_dt', current_date())
+
+            cp_df.show()
+            cp_df.write.mode('append').partitionBy('ins_dt').parquet(datalake_path+'/'+src)
 # spark-submit --packages "mysql:mysql-connector-java:8.0.15" dataframe/ingestion/others/systems/mysql_df.py

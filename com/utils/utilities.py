@@ -37,11 +37,11 @@ def read_from_mysql(spark, hostname, port, database, query, partition_column, us
 
 
 def read_from_mongoDB(spark, database, collection):
-    students = spark \
+    address_df = spark \
         .read \
         .format("com.mongodb.spark.sql.DefaultSource") \
         .option("database", database) \
         .option("collection", collection) \
         .load()
 
-    return students
+    return address_df
