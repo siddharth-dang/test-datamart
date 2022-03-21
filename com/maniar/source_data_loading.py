@@ -39,8 +39,8 @@ if __name__ == '__main__':
                                        app_secret["mysql_conf"]["hostname"],
                                        app_secret["mysql_conf"]["port"],
                                        app_secret["mysql_conf"]["database"],
-                                       app_conf["mysql_conf"]["query"],
-                                       app_conf["mysql_conf"]["partition_column"],
+                                       app_conf[src]["mysql_conf"]["query"],
+                                       app_conf[src]["mysql_conf"]["partition_column"],
                                        app_secret["mysql_conf"]["username"],
                                        app_secret["mysql_conf"]["password"]
                                        )
