@@ -30,7 +30,7 @@ if __name__ == '__main__':
     source_list=app_conf['source_list']
     print(source_list)
     for src in source_list:
-        if src=='SB':
+        if (src=='SB'):
 
             # use the ** operator/un-packer to treat a python dictionary as **kwargs
             print("\nReading data from MySQL DB using SparkSession.read.format(),")
