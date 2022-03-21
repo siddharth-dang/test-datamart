@@ -27,7 +27,8 @@ if __name__ == '__main__':
     s3_conf = app_conf['s3_conf']
     datalake_path = 's3a://' + s3_conf['datalake_path']
 
-    source_list=app_conf['source_list']
+    source_list=[]
+    source_list=source_list.append(app_conf['source_list'])
     print(source_list)
     for src in source_list:
         if (src=='SB'):
