@@ -49,7 +49,7 @@ if __name__ == '__main__':
             txnDF.show()
             txnDF.write.mode('append').partitionBy('ins_dt').parquet(datalake_path + '/' + src)
 
-        elif src=='OL':
+        elif (src=='OL'):
 
             ol_txn_df=ut.read_from_sftp(spark,
                                         app_secret["sftp_conf"]["hostname"],
