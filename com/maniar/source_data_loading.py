@@ -61,7 +61,7 @@ if __name__ == '__main__':
             ol_txn_df.show(5, False)
             ol_txn_df.write.mode('append').partitionBy('ins_dt').parquet(datalake_path + '/' + src)
 
-        elif src=='ADDR':
+        elif (src=='ADDR'):
 
             address_df=ut.read_from_mongoDB(spark,
                                           app_conf["mongodb_config"]["database"],
