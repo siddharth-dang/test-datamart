@@ -69,14 +69,14 @@ if __name__ == '__main__':
                                           app_secret["mongodb_config"]["uri"])
 
             address_df = address_df.withColumn('ins_dt', current_date())
-            address_df.show()
 
-            address_df=address_df.select("address"[0].alias("street"),
-                                         "address"[1].alias("city"),
-                                         "address"[2].alias("state"),"id","mobile-no","ins_dt"
+
+            address_df=address_df.select(col("address.street").alias("street"),
+                                         col("address.city").alias("city"),
+                                         col("address.state").alias("state"),"consumer_id","mobile-no","ins_dt"
                                          )
             address_df.write.mode('append').partitionBy('ins_dt').parquet(datalake_path + '/' + src)
-
+            address_df.show()
         elif (src=='CP'):
 
             cp_df=spark.read.csv('s3a://'+s3_conf['siddharth-bigdata']+'/KC_Extract_1_20171009.csv')
