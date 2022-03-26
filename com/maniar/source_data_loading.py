@@ -72,7 +72,7 @@ if __name__ == '__main__':
             address_df.show()
             address_df.write.mode('append').partitionBy('ins_dt').parquet(datalake_path + '/' + src)
 
-        elif src=='CP':
+        elif (src=='CP'):
 
             cp_df=spark.read.csv('s3a://'+s3_conf['siddharth-bigdata']+'/KC_Extract_1_20171009.csv')
             cp_df=cp_df.withColumn('ins_dt', current_date())
