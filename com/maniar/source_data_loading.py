@@ -70,6 +70,11 @@ if __name__ == '__main__':
 
             address_df = address_df.withColumn('ins_dt', current_date())
             address_df.show()
+
+            address_df=address_df.select("address"["street"].alias("street"),
+                                         "address"["city"].alias("city"),
+                                         "address"["city"].alias("state"),"id","mobile-no","ins_dt"
+                                         )
             address_df.write.mode('append').partitionBy('ins_dt').parquet(datalake_path + '/' + src)
 
         elif (src=='CP'):
