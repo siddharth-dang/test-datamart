@@ -79,7 +79,10 @@ if __name__ == '__main__':
             address_df.show()
         elif (src=='CP'):
 
-            cp_df=spark.read.csv('s3a://' + s3_conf['s3_bucket'] + '/KC_Extract_1_20171009.csv')
+            cp_df=spark.read \
+                .option("header", "true") \
+                .option("delimiter", "|") \
+                .csv('s3a://' + s3_conf['s3_bucket'] + '/KC_Extract_1_20171009.csv')
             cp_df=cp_df.withColumn('ins_dt', current_date())
 
             cp_df.show()
