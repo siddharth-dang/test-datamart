@@ -36,12 +36,14 @@ def read_from_mysql(spark, hostname, port, database, query, partition_column, us
     return txnDF
 
 
-def read_from_mongoDB(spark, database, collection):
+def read_from_mongoDB(spark, database, collection,uri):
     address_df = spark \
         .read \
         .format("com.mongodb.spark.sql.DefaultSource") \
+        .option("uri",uri)
         .option("database", database) \
         .option("collection", collection) \
+
         .load()
 
     return address_df

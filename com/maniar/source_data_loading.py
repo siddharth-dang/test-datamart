@@ -65,7 +65,8 @@ if __name__ == '__main__':
 
             address_df=ut.read_from_mongoDB(spark,
                                           app_conf["mongodb_config"]["database"],
-                                          app_conf["mongodb_config"]["collection"])
+                                          app_conf["mongodb_config"]["collection"],
+                                          app_secret["mongodb_config"]["uri"])
 
             address_df = address_df.withColumn('ins_dt', current_date())
             address_df.show()
