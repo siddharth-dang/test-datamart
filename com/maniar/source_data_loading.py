@@ -39,7 +39,7 @@ if __name__ == '__main__':
                                        app_secret["mysql_conf"]["hostname"],
                                        app_secret["mysql_conf"]["port"],
                                        app_secret["mysql_conf"]["database"],
-                                       app_conf[src]["mysql_conf"]["query"],
+                                       app_conf[src]["mysql_conf"]["dbtabe"],
                                        app_conf[src]["mysql_conf"]["partition_column"],
                                        app_secret["mysql_conf"]["username"],
                                        app_secret["mysql_conf"]["password"]
@@ -59,7 +59,7 @@ if __name__ == '__main__':
                                         app_conf["sftp_conf"]["directory"] + "/receipts_delta_GBR_14_10_2017.csv")
             ol_txn_df = ol_txn_df.withColumn('ins_dt', current_date())
             ol_txn_df.show(5, False)
-            ol_txn_df.write.parquet(datalake_path + '/' + src)
+            ol_txn_df.write.mode('append').partitionBy('ins_dt').parquet(datalake_path + '/' + src)
 
         elif src=='ADDR':
 
