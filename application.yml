@@ -30,8 +30,8 @@ sftp_conf:
 
 
 mongodb_config:
-  database: school
-  collection: students
+  database: customer_address
+  collection: address
 
 redshift_conf:
   filetype: csv
