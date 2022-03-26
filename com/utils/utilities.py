@@ -40,10 +40,9 @@ def read_from_mongoDB(spark, database, collection,uri):
     address_df = spark \
         .read \
         .format("com.mongodb.spark.sql.DefaultSource") \
-        .option("uri",uri)
+        .option("uri",uri)\
         .option("database", database) \
         .option("collection", collection) \
-
         .load()
 
     return address_df
