@@ -18,7 +18,7 @@ REGIS_DIM:
       FROM
         CP
       WHERE
-        INS_DT=CURRENT_DATE
+        INS_DT=CURRENT_DATE-1
     ) CP
       
 
