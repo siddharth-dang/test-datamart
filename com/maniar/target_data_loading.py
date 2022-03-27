@@ -40,7 +40,19 @@ if __name__ == '__main__':
 
             cp_df.createOrReplaceTempView("CP")
 
-            spark.sql(tgt_conf["loadingQuery"]).show()
+            cp_tgt_df=spark.sql(tgt_conf["loadingQuery"])
+
+            jdbc_url = ut.get_redshift_jdbc_url(app_secret)
+            print(jdbc_url)
+
+            cp_tgt_df.coalesce(1).write \
+                .format("io.github.spark_redshift_community.spark.redshift") \
+                .option("url", jdbc_url) \
+                .option("tempdir", "s3a://" + app_conf["s3_conf"]["s3_bucket"] + "/temp") \
+                .option("forward_spark_s3_credentials", "true") \
+                .option("dbtable", "DATAMART.REGIS_DIM") \
+                .mode("overwrite") \
+                .save()
 
 
 # spark-submit --packages "org.apache.hadoop:hadoop-aws:2.7.4" com/maniar/target_data_loading.py

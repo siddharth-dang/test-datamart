@@ -46,3 +46,12 @@ def read_from_mongoDB(spark, database, collection,uri):
         .load()
 
     return address_df
+
+
+def get_redshift_jdbc_url(redshift_config: dict):
+    host = redshift_config["redshift_conf"]["host"]
+    port = redshift_config["redshift_conf"]["port"]
+    database = redshift_config["redshift_conf"]["database"]
+    username = redshift_config["redshift_conf"]["username"]
+    password = redshift_config["redshift_conf"]["password"]
+    return "jdbc:redshift://{}:{}/{}?user={}&password={}".format(host, port, database, username, password)
