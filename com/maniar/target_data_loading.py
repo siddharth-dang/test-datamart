@@ -30,16 +30,17 @@ if __name__ == '__main__':
     target_list=app_conf["target_list"]
 
     for tgt in target_list:
-
-        src_conf=app_conf[tgt]["source_data"]
+        tgt_conf=app_conf[tgt]
 
         if (tgt=='REGIS_DIM'):
+            src_conf = tgt_conf["source_data"]
             print("\nReading Customer Data")
             cp_df=spark.read\
                     .parquet(datalake_path+"/"+src_conf)
 
-            cp_df.createOrReplaceTempView("DATAMART.REGIS_DIM")
+            cp_df.createOrReplaceTempView("CP")
+
+            spark.sql(tgt_conf["loadingQuery"]).show
 
 
-
-
+# spark-submit --packages "org.apache.hadoop:hadoop-aws:2.7.4" com/maniar/target_data_loading.py
