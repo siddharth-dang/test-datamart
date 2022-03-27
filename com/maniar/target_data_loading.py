@@ -26,8 +26,8 @@ if __name__ == '__main__':
     s3_conf = app_conf['s3_conf']
     datalake_path = 's3a://' + s3_conf['s3_bucket'] + '/' + s3_conf['datalake_path']
 
-
-    target_list=app_conf["target_list"]
+    target_list=[]
+    target_list.append(app_conf["target_list"])
 
     for tgt in target_list:
         tgt_conf=app_conf[tgt]
