@@ -17,8 +17,6 @@ REGIS_DIM:
         REGIS_LTY_ID, REGIS_DATE, REGIS_CHANNEL, REGIS_GENDER, REGIS_CITY ,INS_DT
       FROM
         CP
-      WHERE
-        INS_DT=CURRENT_DATE-1
     ) CP
       
 
