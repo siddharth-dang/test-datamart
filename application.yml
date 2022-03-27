@@ -1,6 +1,27 @@
 source_list:
   CP
 
+target_list:
+
+
+REGIS_DIM:
+  tableName: DATAMART.REGIS_DIM
+  source_data: CP
+  loadingQuery: >
+    SELECT
+        MONOTONICALLY_INCREASING_ID() AS REGIS_KEY, REGIS_CNSM_ID AS CNSM_ID, REGIS_CITY_CODE AS CITY_CODE,
+        REGIS_ID, REGIS_DATE, REGIS_LTY_ID AS LTY_ID , REGIS_CHANNEL , REGIS_GENDER ,REGIS_CITY ,INS_DT
+    FROM
+      (SELECT
+        DISTINCT REGIS_CNSM_ID, CAST(REGISp_CITY_CODE AS SMALL_INT), CAST(REGIS_ID AS INTEGER)
+        REGIS_LTY_ID, REGIS_DATE, REGIS_CHANNEL, REGIS_GENDER, REGIS_CITY ,INS_DT
+      FROM
+        CP
+      WHERE
+        INS_DT=CURRENT_DATE
+    ) CP
+      
+
 source_list1:
   -SmartButton (TransactionsData)
   -OL
