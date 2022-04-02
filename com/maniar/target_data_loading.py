@@ -31,9 +31,9 @@ if __name__ == '__main__':
 
     for tgt in target_list:
         tgt_conf=app_conf[tgt]
+        src_conf = tgt_conf["source_data"]
 
         if (tgt=='REGIS_DIM'):
-            src_conf = tgt_conf["source_data"]
             print("\nReading Customer Data")
             cp_df=spark.read\
                     .parquet(datalake_path+"/"+src_conf)
@@ -55,7 +55,6 @@ if __name__ == '__main__':
                 .save()
 
         elif (tgt=='CHILD_DIM'):
-            src_conf = tgt_conf["source_data"]
             print("\nReading Customer Data")
             cp_df = spark.read \
                 .parquet(datalake_path + "/" + src_conf)
@@ -77,5 +76,42 @@ if __name__ == '__main__':
                 .save()
 
 
-# spark-submit --jars "https://s3.amazonaws.com/redshift-downloads/drivers/jdbc/1.2.36.1060/RedshiftJDBC42-no-awssdk-1.2.36.1060.jar" --packages "org.apache.spark:spark-avro_2.11:2.4.2,io.github.spark-redshift-community:spark-redshift_2.11:4.0.1,org.apache.hadoop:hadoop-aws:2.7.4" com/maniar/target_data_loading.py
+        elif (tgt=='RTL_TXN_FCT'):
+            print("\nReading SB(Smart Button) Data")
+            sb_df = spark.read \
+                .parquet(datalake_path + "/" + src_conf[0])
+            sb_df.createOrReplaceTempView("SB")
+
+            print("\nReading OL(Orchestration Layer) Data")
+            ol_df = spark.read \
+                .parquet(datalake_path + "/" + src_conf[1])
+            ol_df.createOrReplaceTempView("OL")
+
+            print("\nReading REGIS_DIM Data")
+            jdbc_url = ut.get_redshift_jdbc_url(app_secret)
+            print(jdbc_url)
+
+            dim_df = spark.read \
+                .format("io.github.spark_redshift_community.spark.redshift") \
+                .option("url", jdbc_url) \
+                .option("target_src_table", app_conf[tgt]["target_src_table"]) \
+                .option("forward_spark_s3_credentials", "true") \
+                .option("tempdir", "s3a://" + app_conf["s3_conf"]["s3_bucket"] + "/temp") \
+                .load()
+            dim_df.createOrReplaceTempView("REGIS_DIM")
+
+            tgt_df = spark.sql(tgt_conf["loadingQuery"])
+
+            tgt_df.coalesce(1).write \
+                .format("io.github.spark_redshift_community.spark.redshift") \
+                .option("url", jdbc_url) \
+                .option("tempdir", "s3a://" + app_conf["s3_conf"]["s3_bucket"] + "/temp") \
+                .option("forward_spark_s3_credentials", "true") \
+                .option("dbtable", "DATAMART.RTL_TXN_FCT") \
+                .mode("overwrite") \
+                .save()
+
+
+
+        # spark-submit --jars "https://s3.amazonaws.com/redshift-downloads/drivers/jdbc/1.2.36.1060/RedshiftJDBC42-no-awssdk-1.2.36.1060.jar" --packages "org.apache.spark:spark-avro_2.11:2.4.2,io.github.spark-redshift-community:spark-redshift_2.11:4.0.1,org.apache.hadoop:hadoop-aws:2.7.4" com/maniar/target_data_loading.py
 # --packages "org.apache.hadoop:hadoop-aws:2.7.4" com/maniar/target_data_loading.py

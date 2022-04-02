@@ -77,6 +77,7 @@ if __name__ == '__main__':
                                          )
             address_df.write.mode('append').partitionBy('ins_dt').parquet(datalake_path + '/' + src)
             address_df.show()
+
         elif (src=='CP'):
 
             cp_df=spark.read \
