@@ -81,11 +81,13 @@ if __name__ == '__main__':
             sb_df = spark.read \
                 .parquet(datalake_path + "/" + src_conf[0])
             sb_df.createOrReplaceTempView("SB")
+            sb_df.show()
 
             print("\nReading OL(Orchestration Layer) Data")
             ol_df = spark.read \
                 .parquet(datalake_path + "/" + src_conf[1])
             ol_df.createOrReplaceTempView("OL")
+            ol_df.show()
 
             print("\nReading REGIS_DIM Data")
             jdbc_url = ut.get_redshift_jdbc_url(app_secret)
@@ -99,6 +101,7 @@ if __name__ == '__main__':
                 .option("tempdir", "s3a://" + app_conf["s3_conf"]["s3_bucket"] + "/temp") \
                 .load()
             dim_df.createOrReplaceTempView("REGIS_DIM")
+            dim_df.show()
 
             tgt_df = spark.sql(tgt_conf["loadingQuery"])
 
