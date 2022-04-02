@@ -54,5 +54,28 @@ if __name__ == '__main__':
                 .mode("overwrite") \
                 .save()
 
+        elif (tgt=='CHILD_DIM'):
+            src_conf = tgt_conf["source_data"]
+            print("\nReading Customer Data")
+            cp_df = spark.read \
+                .parquet(datalake_path + "/" + src_conf)
 
-# spark-submit --packages "org.apache.hadoop:hadoop-aws:2.7.4" com/maniar/target_data_loading.py
+            cp_df.createOrReplaceTempView("CP")
+
+            cp_tgt_df = spark.sql(tgt_conf["loadingQuery"])
+
+            jdbc_url = ut.get_redshift_jdbc_url(app_secret)
+            print(jdbc_url)
+
+            cp_tgt_df.coalesce(1).write \
+                .format("io.github.spark_redshift_community.spark.redshift") \
+                .option("url", jdbc_url) \
+                .option("tempdir", "s3a://" + app_conf["s3_conf"]["s3_bucket"] + "/temp") \
+                .option("forward_spark_s3_credentials", "true") \
+                .option("dbtable", "DATAMART.CHILD_DIM") \
+                .mode("overwrite") \
+                .save()
+
+
+# spark-submit --jars "https://s3.amazonaws.com/redshift-downloads/drivers/jdbc/1.2.36.1060/RedshiftJDBC42-no-awssdk-1.2.36.1060.jar" --packages "org.apache.spark:spark-avro_2.11:2.4.2,io.github.spark-redshift-community:spark-redshift_2.11:4.0.1,org.apache.hadoop:hadoop-aws:2.7.4" com/maniar/target_data_loading.py
+# --packages "org.apache.hadoop:hadoop-aws:2.7.4" com/maniar/target_data_loading.py
