@@ -17,6 +17,8 @@ REGIS_DIM:
         REGIS_LTY_ID, REGIS_DATE, REGIS_CHANNEL, REGIS_GENDER, REGIS_CITY ,INS_DT
       FROM
         CP
+        WHERE   
+            INS_DT = '2022-03-26' 
     ) CP
 
 
@@ -32,7 +34,7 @@ CHILD_DIM:
       FROM
           CP
       WHERE
-          INS_DT = '2021-06-26' AND CHILD_ID IS NOT NULL
+          INS_DT = '2022-03-26' AND CHILD_ID IS NOT NULL
       ) CP
     
     
@@ -58,8 +60,8 @@ RTL_TXN_FCT:
           LEFT OUTER JOIN REGIS_DIM REG
             ON REC.LOYALTY_ID = REG.CNSM_ID
       WHERE
-          TXN.INS_DT = '2021-06-26'
-            AND (REC.INS_DT = '2021-06-26' OR REC.INS_DT is NULL)    
+          TXN.INS_DT = '2022-03-21'
+            AND (REC.INS_DT = '2022-03-26' OR REC.INS_DT is NULL)    
 
 source_list1:
   -SmartButton (TransactionsData)
