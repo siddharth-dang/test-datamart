@@ -55,7 +55,7 @@ if __name__ == '__main__':
                 .save()
 
         elif (tgt=='CHILD_DIM'):
-            print("\nReading Customer Data")
+            print("\nReading Customer Child Data")
             cp_df = spark.read \
                 .parquet(datalake_path + "/" + src_conf)
 
