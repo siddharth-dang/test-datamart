@@ -94,7 +94,7 @@ if __name__ == '__main__':
             dim_df = spark.read \
                 .format("io.github.spark_redshift_community.spark.redshift") \
                 .option("url", jdbc_url) \
-                .option("target_src_table", app_conf[tgt]["target_src_table"]) \
+                .option("dbtable", app_conf[tgt]["target_src_table"]) \
                 .option("forward_spark_s3_credentials", "true") \
                 .option("tempdir", "s3a://" + app_conf["s3_conf"]["s3_bucket"] + "/temp") \
                 .load()

@@ -18,7 +18,7 @@ REGIS_DIM:
       FROM
         CP
         WHERE   
-            INS_DT = '2022-03-26' 
+            INS_DT = "2022-03-26" 
     ) CP
 
 
@@ -60,8 +60,8 @@ RTL_TXN_FCT:
           LEFT OUTER JOIN REGIS_DIM REG
             ON REC.LOYALTY_ID = REG.CNSM_ID
       WHERE
-          TXN.INS_DT = '2022-03-21'
-            AND (REC.INS_DT = '2022-03-26' OR REC.INS_DT is NULL)    
+          TXN.INS_DT = "2022-03-21"
+            AND (REC.INS_DT = "2022-03-26" OR REC.INS_DT is NULL)    
 
 source_list1:
   -SmartButton (TransactionsData)
