@@ -1,8 +1,33 @@
 source_list:
-  CP
+  - SB
 
 target_list:
-    RTL_TXN_FCT
+  - RTL_TXN_FCT
+
+SB:
+  mysql_conf:
+    dbtable: testdb.TRANSACTIONSYNC
+    partition_column: App_Transaction_Id
+    query: "(select * from testdb.TRANSACTIONSYNC where Internal_Member_Id = 'PC7135361') as t"
+
+OL:
+  filename: /receipts_delta_GBR_14_10_2017.csv
+  sftp_conf:
+    filetype: csv
+    delimiter: |
+    directory: /home/ubuntu/data
+
+CP:
+  filename: /KC_Extract_1_20171009.csv
+  s3_conf:
+    s3_bucket: siddharth-bigdata
+    datalake_path: datalake
+
+ADDR:
+  mongodb_config:
+    database: customer_address
+    collection: address
+
 
 REGIS_DIM:
   tableName: DATAMART.REGIS_DIM
@@ -63,37 +88,12 @@ RTL_TXN_FCT:
           TXN.INS_DT = "2022-03-21"
             AND (REC.INS_DT = "2022-03-26" OR REC.INS_DT is NULL)    
 
-source_list1:
-  -SmartButton (TransactionsData)
-  -OL
-  -OrchestrationLayer (RewardsData)
-  -CP
-  -CustomerPortal (CustomerData)
-  -ADDR
-  -Address(MongoDB)
 
-
-SB:
-  mysql_conf:
-    dbtable: testdb.TRANSACTIONSYNC
-    partition_column: App_Transaction_Id
-    query: "(select * from testdb.TRANSACTIONSYNC where Internal_Member_Id = 'PC7135361') as t"
 
 
 s3_conf:
   s3_bucket: siddharth-bigdata
   datalake_path: datalake
-
-sftp_conf:
-    filetype: csv
-    delimiter: |
-    directory: /home/ubuntu/data
-
-
-
-mongodb_config:
-  database: customer_address
-  collection: address
 
 redshift_conf:
   filetype: csv

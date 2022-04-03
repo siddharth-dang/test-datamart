@@ -25,47 +25,46 @@ if __name__ == '__main__':
     app_secret = yaml.load(secret, Loader=yaml.FullLoader)
 
     s3_conf = app_conf['s3_conf']
-    datalake_path = 's3a://' + s3_conf['s3_bucket'] +'/'+ s3_conf['datalake_path']
+    datalake_path = 's3a://' + s3_conf['s3_bucket'] + '/' + s3_conf['datalake_path']
 
-    source_list=[]
-    source_list.append(app_conf['source_list'])
-    print(source_list)
+    source_list = app_conf['source_list']
+
     for src in source_list:
-        if (src=='SB'):
+        src_conf = app_conf[src]
 
-            # use the ** operator/un-packer to treat a python dictionary as **kwargs
+        if src == 'SB':
             print("\nReading data from MySQL DB using SparkSession.read.format(),")
             txnDF = ut.read_from_mysql(spark,
                                        app_secret["mysql_conf"]["hostname"],
                                        app_secret["mysql_conf"]["port"],
                                        app_secret["mysql_conf"]["database"],
-                                       app_conf[src]["mysql_conf"]["dbtabe"],
-                                       app_conf[src]["mysql_conf"]["partition_column"],
+                                       src_conf["mysql_conf"]["dbtabe"],
+                                       src_conf["mysql_conf"]["partition_column"],
                                        app_secret["mysql_conf"]["username"],
                                        app_secret["mysql_conf"]["password"]
                                        )
 
-            txnDF=txnDF.withColumn('ins_dt', current_date())
+            txnDF = txnDF.withColumn('ins_dt', current_date())
             txnDF.show()
             txnDF.write.mode('append').partitionBy('ins_dt').parquet(datalake_path + '/' + src)
 
-        elif (src=='OL'):
-
-            ol_txn_df=ut.read_from_sftp(spark,
+        elif src == 'OL':
+            src_conf = app_conf[src]
+            ol_txn_df = ut.read_from_sftp(spark,
                                         app_secret["sftp_conf"]["hostname"],
                                         app_secret["sftp_conf"]["port"],
                                         app_secret["sftp_conf"]["username"],
                                         os.path.abspath(current_dir + "/../../" + app_secret["sftp_conf"]["pem"]),
-                                        app_conf["sftp_conf"]["directory"] + "/receipts_delta_GBR_14_10_2017.csv")
+                                        src_conf["sftp_conf"]["directory"] + "/receipts_delta_GBR_14_10_2017.csv")
             ol_txn_df = ol_txn_df.withColumn('ins_dt', current_date())
             ol_txn_df.show(5, False)
             ol_txn_df.write.mode('append').partitionBy('ins_dt').parquet(datalake_path + '/' + src)
 
-        elif (src=='ADDR'):
-
+        elif src == 'ADDR':
+            src_conf = app_conf[src]
             address_df=ut.read_from_mongoDB(spark,
-                                          app_conf["mongodb_config"]["database"],
-                                          app_conf["mongodb_config"]["collection"],
+                                          src_conf["mongodb_config"]["database"],
+                                          src_conf["mongodb_config"]["collection"],
                                           app_secret["mongodb_config"]["uri"])
 
             address_df = address_df.withColumn('ins_dt', current_date())
@@ -78,7 +77,7 @@ if __name__ == '__main__':
             address_df.write.mode('append').partitionBy('ins_dt').parquet(datalake_path + '/' + src)
             address_df.show()
 
-        elif (src=='CP'):
+        elif src == 'CP':
 
             cp_df=spark.read \
                 .option("header", "true") \
