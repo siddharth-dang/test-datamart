@@ -63,6 +63,7 @@ if __name__ == '__main__':
 
 
         elif tgt == 'RTL_TXN_FCT':
+
             print("\nReading SB(Smart Button) Data")
             sb_df = spark.read \
                 .parquet(datalake_path + "/" + src_conf[0])
@@ -79,26 +80,13 @@ if __name__ == '__main__':
             jdbc_url = ut.get_redshift_jdbc_url(app_secret)
             print(jdbc_url)
 
-            dim_df = spark.read \
-                .format("io.github.spark_redshift_community.spark.redshift") \
-                .option("url", jdbc_url) \
-                .option("dbtable", app_conf[tgt]["target_src_table"]) \
-                .option("forward_spark_s3_credentials", "true") \
-                .option("tempdir", "s3a://" + app_conf["s3_conf"]["s3_bucket"] + "/temp") \
-                .load()
+            dim_df = ut.read_from_RedShift(spark, jdbc_url, app_conf, tgt)
             dim_df.createOrReplaceTempView("REGIS_DIM")
             dim_df.show()
 
             tgt_df = spark.sql(tgt_conf["loadingQuery"])
 
-            tgt_df.coalesce(1).write \
-                .format("io.github.spark_redshift_community.spark.redshift") \
-                .option("url", jdbc_url) \
-                .option("tempdir", "s3a://" + app_conf["s3_conf"]["s3_bucket"] + "/temp") \
-                .option("forward_spark_s3_credentials", "true") \
-                .option("dbtable", "DATAMART.RTL_TXN_FCT") \
-                .mode("overwrite") \
-                .save()
+            ut.write_to_RedShift(tgt_df, jdbc_url, app_conf, "DATAMART.RTL_TXN_FCT")
 
 
 

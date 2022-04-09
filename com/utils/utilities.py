@@ -76,3 +76,13 @@ def write_to_RedShift(df, jdbc_url, app_conf, dbtable):
         .option("dbtable", dbtable) \
         .mode("overwrite") \
         .save()
+
+def read_from_RedShift(spark, jdbc_url, app_conf, tgt):
+    df = spark.read \
+        .format("io.github.spark_redshift_community.spark.redshift") \
+        .option("url", jdbc_url) \
+        .option("dbtable", app_conf[tgt]["target_src_table"]) \
+        .option("forward_spark_s3_credentials", "true") \
+        .option("tempdir", "s3a://" + app_conf["s3_conf"]["s3_bucket"] + "/temp") \
+        .load()
+    return df
