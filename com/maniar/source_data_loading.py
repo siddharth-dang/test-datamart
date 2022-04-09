@@ -49,7 +49,7 @@ if __name__ == '__main__':
             txnDF.write.mode('append').partitionBy('ins_dt').parquet(datalake_path + '/' + src)
 
         elif src == 'OL':
-            src_conf = app_conf[src]
+
             ol_txn_df = ut.read_from_sftp(spark,
                                         app_secret["sftp_conf"]["hostname"],
                                         app_secret["sftp_conf"]["port"],
@@ -61,7 +61,7 @@ if __name__ == '__main__':
             ol_txn_df.write.mode('append').partitionBy('ins_dt').parquet(datalake_path + '/' + src)
 
         elif src == 'ADDR':
-            src_conf = app_conf[src]
+
             address_df=ut.read_from_mongoDB(spark,
                                           src_conf["mongodb_config"]["database"],
                                           src_conf["mongodb_config"]["collection"],
@@ -82,7 +82,7 @@ if __name__ == '__main__':
             cp_df=spark.read \
                 .option("header", "true") \
                 .option("delimiter", "|") \
-                .csv('s3a://' + s3_conf['s3_bucket'] + '/KC_Extract_1_20171009.csv')
+                .csv('s3a://' + src_conf['s3_conf']['s3_bucket'] +'/'+ src_conf['s3_conf']['datalake_path']+src_conf['filename'] )
             cp_df=cp_df.withColumn('ins_dt', current_date())
 
             cp_df.show()
