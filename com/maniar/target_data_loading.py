@@ -45,14 +45,7 @@ if __name__ == '__main__':
             jdbc_url = ut.get_redshift_jdbc_url(app_secret)
             print(jdbc_url)
 
-            cp_tgt_df.coalesce(1).write \
-                .format("io.github.spark_redshift_community.spark.redshift") \
-                .option("url", jdbc_url) \
-                .option("tempdir", "s3a://" + app_conf["s3_conf"]["s3_bucket"] + "/temp") \
-                .option("forward_spark_s3_credentials", "true") \
-                .option("dbtable", "DATAMART.REGIS_DIM") \
-                .mode("overwrite") \
-                .save()
+            ut.write_to_RedShift(cp_tgt_df, jdbc_url, app_conf, "DATAMART.REGIS_DIM")
 
         elif (tgt=='CHILD_DIM'):
             print("\nReading Customer Child Data")
@@ -66,14 +59,7 @@ if __name__ == '__main__':
             jdbc_url = ut.get_redshift_jdbc_url(app_secret)
             print(jdbc_url)
 
-            cp_tgt_df.coalesce(1).write \
-                .format("io.github.spark_redshift_community.spark.redshift") \
-                .option("url", jdbc_url) \
-                .option("tempdir", "s3a://" + app_conf["s3_conf"]["s3_bucket"] + "/temp") \
-                .option("forward_spark_s3_credentials", "true") \
-                .option("dbtable", "DATAMART.CHILD_DIM") \
-                .mode("overwrite") \
-                .save()
+            ut.write_to_RedShift(cp_tgt_df, jdbc_url, app_conf, "DATAMART.CHILD_DIM")
 
 
         elif (tgt=='RTL_TXN_FCT'):

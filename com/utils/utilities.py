@@ -65,3 +65,14 @@ def read_csv_from_s3(spark, path, delimiter = "|", header = "true"):
 
 def write_to_s3(df, datalake_path, src, partition_column = 'ins_dt', mode = 'overwrite'):
     df.write.mode(mode).partitionBy(partition_column).parquet(datalake_path + '/' + src)
+
+
+def write_to_RedShift(df, jdbc_url, app_conf, dbtable):
+    df.coalesce(1).write \
+        .format("io.github.spark_redshift_community.spark.redshift") \
+        .option("url", jdbc_url) \
+        .option("tempdir", "s3a://" + app_conf["s3_conf"]["s3_bucket"] + "/temp") \
+        .option("forward_spark_s3_credentials", "true") \
+        .option("dbtable", dbtable) \
+        .mode("overwrite") \
+        .save()
