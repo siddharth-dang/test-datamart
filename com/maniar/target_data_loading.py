@@ -47,7 +47,7 @@ if __name__ == '__main__':
 
             ut.write_to_RedShift(cp_tgt_df, jdbc_url, app_conf, "DATAMART.REGIS_DIM")
 
-        elif (tgt=='CHILD_DIM'):
+        elif tgt == 'CHILD_DIM':
             print("\nReading Customer Child Data")
             cp_df = spark.read \
                 .parquet(datalake_path + "/" + src_conf)
@@ -62,7 +62,7 @@ if __name__ == '__main__':
             ut.write_to_RedShift(cp_tgt_df, jdbc_url, app_conf, "DATAMART.CHILD_DIM")
 
 
-        elif (tgt=='RTL_TXN_FCT'):
+        elif tgt == 'RTL_TXN_FCT':
             print("\nReading SB(Smart Button) Data")
             sb_df = spark.read \
                 .parquet(datalake_path + "/" + src_conf[0])
