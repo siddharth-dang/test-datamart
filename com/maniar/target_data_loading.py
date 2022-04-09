@@ -43,6 +43,7 @@ if __name__ == '__main__':
         if tgt == 'REGIS_DIM':
 
             regis_dim_df = spark.sql(tgt_conf["loadingQuery"])
+            regis_dim_df.show()
 
             jdbc_url = ut.get_redshift_jdbc_url(app_secret)
             print(jdbc_url)
@@ -52,6 +53,7 @@ if __name__ == '__main__':
         elif tgt == 'CHILD_DIM':
 
             child_dim_df = spark.sql(tgt_conf["loadingQuery"])
+            child_dim_df.show()
 
             jdbc_url = ut.get_redshift_jdbc_url(app_secret)
             print(jdbc_url)
@@ -69,9 +71,9 @@ if __name__ == '__main__':
             dim_df.createOrReplaceTempView("REGIS_DIM")
             dim_df.show()
 
-            tgt_df = spark.sql(tgt_conf["loadingQuery"])
+            rtl_txn_fct_df = spark.sql(tgt_conf["loadingQuery"])
 
-            ut.write_to_RedShift(tgt_df, jdbc_url, app_conf, tgt_conf)
+            ut.write_to_RedShift(rtl_txn_fct_df, jdbc_url, app_conf, tgt_conf)
 
 
 
