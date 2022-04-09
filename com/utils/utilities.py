@@ -67,21 +67,21 @@ def write_to_s3(df, datalake_path, src, partition_column = 'ins_dt', mode = 'ove
     df.write.mode(mode).partitionBy(partition_column).parquet(datalake_path + '/' + src)
 
 
-def write_to_RedShift(df, jdbc_url, app_conf, dbtable):
+def write_to_RedShift(df, jdbc_url, app_conf, tgt_conf):
     df.coalesce(1).write \
         .format("io.github.spark_redshift_community.spark.redshift") \
         .option("url", jdbc_url) \
         .option("tempdir", "s3a://" + app_conf["s3_conf"]["s3_bucket"] + "/temp") \
         .option("forward_spark_s3_credentials", "true") \
-        .option("dbtable", dbtable) \
+        .option("dbtable", tgt_conf['tableName']) \
         .mode("overwrite") \
         .save()
 
-def read_from_RedShift(spark, jdbc_url, app_conf, tgt):
+def read_from_RedShift(spark, jdbc_url, app_conf, src_dbtable):
     df = spark.read \
         .format("io.github.spark_redshift_community.spark.redshift") \
         .option("url", jdbc_url) \
-        .option("dbtable", app_conf[tgt]["target_src_table"]) \
+        .option("dbtable", src_dbtable) \
         .option("forward_spark_s3_credentials", "true") \
         .option("tempdir", "s3a://" + app_conf["s3_conf"]["s3_bucket"] + "/temp") \
         .load()

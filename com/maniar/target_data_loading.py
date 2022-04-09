@@ -30,63 +30,48 @@ if __name__ == '__main__':
     target_list.append(app_conf["target_list"])
 
     for tgt in target_list:
-        tgt_conf=app_conf[tgt]
-        src_conf = tgt_conf["source_data"]
+        tgt_conf = app_conf[tgt]
+        src_list = tgt_conf["source_data"]
 
-        if (tgt=='REGIS_DIM'):
-            print("\nReading Customer Data")
-            cp_df=spark.read\
-                    .parquet(datalake_path+"/"+src_conf)
+        for src_data in src_list:
+            stg_df = spark.read \
+                .parquet(datalake_path + "/" + src_data)
+            stg_df.createOrReplaceTempView(src_data)
 
-            cp_df.createOrReplaceTempView("CP")
 
-            cp_tgt_df=spark.sql(tgt_conf["loadingQuery"])
+
+        if tgt == 'REGIS_DIM':
+
+            regis_dim_df = spark.sql(tgt_conf["loadingQuery"])
 
             jdbc_url = ut.get_redshift_jdbc_url(app_secret)
             print(jdbc_url)
 
-            ut.write_to_RedShift(cp_tgt_df, jdbc_url, app_conf, "DATAMART.REGIS_DIM")
+            ut.write_to_RedShift(regis_dim_df, jdbc_url, app_conf, tgt_conf)
 
         elif tgt == 'CHILD_DIM':
-            print("\nReading Customer Child Data")
-            cp_df = spark.read \
-                .parquet(datalake_path + "/" + src_conf)
 
-            cp_df.createOrReplaceTempView("CP")
-
-            cp_tgt_df = spark.sql(tgt_conf["loadingQuery"])
+            child_dim_df = spark.sql(tgt_conf["loadingQuery"])
 
             jdbc_url = ut.get_redshift_jdbc_url(app_secret)
             print(jdbc_url)
 
-            ut.write_to_RedShift(cp_tgt_df, jdbc_url, app_conf, "DATAMART.CHILD_DIM")
+            ut.write_to_RedShift(child_dim_df, jdbc_url, app_conf, tgt_conf)
 
 
         elif tgt == 'RTL_TXN_FCT':
-
-            print("\nReading SB(Smart Button) Data")
-            sb_df = spark.read \
-                .parquet(datalake_path + "/" + src_conf[0])
-            sb_df.createOrReplaceTempView("SB")
-            sb_df.show()
-
-            print("\nReading OL(Orchestration Layer) Data")
-            ol_df = spark.read \
-                .parquet(datalake_path + "/" + src_conf[1])
-            ol_df.createOrReplaceTempView("OL")
-            ol_df.show()
 
             print("\nReading REGIS_DIM Data")
             jdbc_url = ut.get_redshift_jdbc_url(app_secret)
             print(jdbc_url)
 
-            dim_df = ut.read_from_RedShift(spark, jdbc_url, app_conf, tgt)
+            dim_df = ut.read_from_RedShift(spark, jdbc_url, app_conf, tgt_conf["target_src_table"])
             dim_df.createOrReplaceTempView("REGIS_DIM")
             dim_df.show()
 
             tgt_df = spark.sql(tgt_conf["loadingQuery"])
 
-            ut.write_to_RedShift(tgt_df, jdbc_url, app_conf, "DATAMART.RTL_TXN_FCT")
+            ut.write_to_RedShift(tgt_df, jdbc_url, app_conf, tgt_conf)
 
 
 
