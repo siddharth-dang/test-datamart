@@ -79,10 +79,7 @@ if __name__ == '__main__':
 
         elif src == 'CP':
 
-            cp_df=spark.read \
-                .option("header", "true") \
-                .option("delimiter", "|") \
-                .csv('s3a://' + src_conf['s3_conf']['s3_bucket'] + "/" + src_conf['filename'] )
+            cp_df=ut.read_from_s3(spark,src_conf)
             cp_df=cp_df.withColumn('ins_dt', current_date())
 
             cp_df.show()
