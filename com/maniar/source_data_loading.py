@@ -11,7 +11,6 @@ if __name__ == '__main__':
     spark = SparkSession \
         .builder \
         .appName("Read ingestion enterprise applications") \
-        .master('local[*]') \
         .getOrCreate()
     spark.sparkContext.setLogLevel('ERROR')
 
@@ -83,10 +82,10 @@ if __name__ == '__main__':
 
         elif src == 'CP':
 
-            cp_df=ut.read_from_s3(spark,src_conf)
+            cp_df=ut.read_csv_from_s3(spark, 's3a://' + src_conf['s3_conf']['s3_bucket'] + "/" + src_conf['filename'])
             cp_df=cp_df.withColumn('ins_dt', current_date())
 
             cp_df.show()
             ut.write_to_s3(cp_df,datalake_path,src)
 
-# spark-submit --packages "mysql:mysql-connector-java:8.0.15,com.springml:spark-sftp_2.11:1.1.1,org.mongodb.spark:mongo-spark-connector_2.11:2.4.1,org.apache.hadoop:hadoop-aws:2.7.4" com/maniar/source_data_loading.py
+# spark-submit --master yarn --packages "mysql:mysql-connector-java:8.0.15,com.springml:spark-sftp_2.11:1.1.1,org.mongodb.spark:mongo-spark-connector_2.11:2.4.1,org.apache.hadoop:hadoop-aws:2.7.4" com/maniar/source_data_loading.py
