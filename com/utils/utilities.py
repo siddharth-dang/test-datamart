@@ -63,5 +63,5 @@ def read_from_s3(spark, src_conf, delimiter = "|", header = "true"):
         .csv('s3a://' + src_conf['s3_conf']['s3_bucket'] + "/" + src_conf['filename'])
     return df
 
-def write_to_s3(df, datalake_path, src, partition_column = 'ins_dt'):
-    df.write.mode('append').partitionBy('ins_dt').parquet(datalake_path + '/' + src)
+def write_to_s3(df, datalake_path, src, partition_column = 'ins_dt', mode = 'overwrite'):
+    df.write.mode(mode).partitionBy(partition_column).parquet(datalake_path + '/' + src)

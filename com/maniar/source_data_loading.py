@@ -58,7 +58,7 @@ if __name__ == '__main__':
                                         src_conf["sftp_conf"]["directory"] + "/receipts_delta_GBR_14_10_2017.csv")
             ol_txn_df = ol_txn_df.withColumn('ins_dt', current_date())
             ol_txn_df.show(5, False)
-            ol_txn_df.write.mode('append').partitionBy('ins_dt').parquet(datalake_path + '/' + src)
+            ut.write_to_s3(ol_txn_df, datalake_path, src)
 
         elif src == 'ADDR':
 
@@ -70,12 +70,14 @@ if __name__ == '__main__':
             address_df = address_df.withColumn('ins_dt', current_date())
 
 
-            address_df=address_df.select(col("address.street").alias("street"),
+            address_df = address_df.select(col("address.street").alias("street"),
                                          col("address.city").alias("city"),
                                          col("address.state").alias("state"),"consumer_id","mobile-no","ins_dt"
                                          )
-            address_df.write.mode('append').partitionBy('ins_dt').parquet(datalake_path + '/' + src)
+
             address_df.show()
+            ut.write_to_s3(address_df, datalake_path, src)
+
 
         elif src == 'CP':
 
