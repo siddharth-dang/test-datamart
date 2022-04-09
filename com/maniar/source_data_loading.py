@@ -73,7 +73,7 @@ if __name__ == '__main__':
 
             address_df = address_df.select(col("address.street").alias("street"),
                                          col("address.city").alias("city"),
-                                         col("address.state").alias("state"),"consumer_id","mobile-no","ins_dt"
+                                         col("address.state").alias("state"), "consumer_id", "mobile-no", "ins_dt"
                                          )
             address_df.show()
 
