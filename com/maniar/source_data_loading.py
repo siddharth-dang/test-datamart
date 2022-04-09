@@ -83,6 +83,6 @@ if __name__ == '__main__':
             cp_df=cp_df.withColumn('ins_dt', current_date())
 
             cp_df.show()
-            cp_df.write.mode('append').partitionBy('ins_dt').parquet(datalake_path+'/'+src)
+            ut.write_to_s3(cp_df,datalake_path,src)
 
 # spark-submit --packages "mysql:mysql-connector-java:8.0.15,com.springml:spark-sftp_2.11:1.1.1,org.mongodb.spark:mongo-spark-connector_2.11:2.4.1,org.apache.hadoop:hadoop-aws:2.7.4" com/maniar/source_data_loading.py

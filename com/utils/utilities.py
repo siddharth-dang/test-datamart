@@ -56,9 +56,12 @@ def get_redshift_jdbc_url(redshift_config: dict):
     password = redshift_config["redshift_conf"]["password"]
     return "jdbc:redshift://{}:{}/{}?user={}&password={}".format(host, port, database, username, password)
 
-def read_from_s3(spark, src_conf):
+def read_from_s3(spark, src_conf, delimiter = "|", header = "true"):
     df = spark.read \
-        .option("header", "true") \
-        .option("delimiter", "|") \
+        .option("header", header) \
+        .option("delimiter", delimiter) \
         .csv('s3a://' + src_conf['s3_conf']['s3_bucket'] + "/" + src_conf['filename'])
     return df
+
+def write_to_s3(df, datalake_path, src):
+    df.write.mode('append').partitionBy('ins_dt').parquet(datalake_path + '/' + src)
