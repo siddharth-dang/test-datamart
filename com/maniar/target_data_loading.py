@@ -33,6 +33,7 @@ if __name__ == '__main__':
         src_list = tgt_conf["source_data"]
 
         for src_data in src_list:
+            print(src_data)
             stg_df = spark.read \
                 .parquet(datalake_path + "/" + src_data)
             stg_df.createOrReplaceTempView(src_data)
