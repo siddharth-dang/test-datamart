@@ -1,7 +1,8 @@
 source_list:
   - SB
+  - OL
   - CP
-  - ADDR
+
 
 target_list:
   - RTL_TXN_FCT
