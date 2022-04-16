@@ -48,6 +48,7 @@ if __name__ == '__main__':
             print(jdbc_url)
 
             ut.write_to_RedShift(regis_dim_df, jdbc_url, app_conf, tgt_conf)
+            print("Loaded to REGIS_DIM")
 
         elif tgt == 'CHILD_DIM':
 
@@ -58,13 +59,13 @@ if __name__ == '__main__':
             print(jdbc_url)
 
             ut.write_to_RedShift(child_dim_df, jdbc_url, app_conf, tgt_conf)
-
+            print("Loaded to CHILD_DIM")
 
         elif tgt == 'RTL_TXN_FCT':
 
             jdbc_url = ut.get_redshift_jdbc_url(app_secret)
             print(jdbc_url)
-            print("\nReading REGIS_DIM Data")
+
             dim_df = ut.read_from_RedShift(spark, jdbc_url, app_conf, tgt_conf["target_src_table"])
             dim_df.createOrReplaceTempView("REGIS_DIM")
             dim_df.show()
@@ -72,7 +73,7 @@ if __name__ == '__main__':
             rtl_txn_fct_df = spark.sql(tgt_conf["loadingQuery"])
 
             ut.write_to_RedShift(rtl_txn_fct_df, jdbc_url, app_conf, tgt_conf)
-
+            print("Loaded to RTL_TXN_FCT")
 
 
 # spark-submit --jars "https://s3.amazonaws.com/redshift-downloads/drivers/jdbc/1.2.36.1060/RedshiftJDBC42-no-awssdk-1.2.36.1060.jar" --packages "org.apache.spark:spark-avro_2.11:2.4.2,io.github.spark-redshift-community:spark-redshift_2.11:4.0.1,org.apache.hadoop:hadoop-aws:2.7.4" com/maniar/target_data_loading.py
