@@ -63,7 +63,7 @@ if __name__ == '__main__':
 
         elif src == 'ADDR':
 
-            address_df=ut.read_from_mongoDB(spark,
+            address_df = ut.read_from_mongoDB(spark,
                                           src_conf["mongodb_config"]["database"],
                                           src_conf["mongodb_config"]["collection"],
                                           app_secret["mongodb_config"]["uri"])
